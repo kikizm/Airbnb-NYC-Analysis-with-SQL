@@ -29,9 +29,15 @@ SELECT
     COUNT(id) AS total_listings
 FROM `New.AB_NYC_2019`
 GROUP BY neighbourhood_group, neighbourhood
-ORDER BY total_listings DESC;
+ORDER BY total_listings DESC
 
 ```
 **Result :**
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a40c0907-3b58-4ad4-9a91-6a2eb3a59c18" alt="Capture" width="600"/>
+</p>
+
+1 — Most listings are concentrated in Manhattan and Brooklyn, making it the dominant area for Airbnb properties. 
 
 
