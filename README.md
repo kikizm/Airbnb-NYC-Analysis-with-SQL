@@ -12,7 +12,7 @@ Neighborhood analysis helps us understand where Airbnb properties are concentrat
 
 ### Task
 
-## 1. Finding Top Neighborhoods with the Most Listings
+### **1. Finding Top Neighborhoods with the Most Listings**
 
 **Steps:**
 
