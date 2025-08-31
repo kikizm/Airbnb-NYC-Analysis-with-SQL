@@ -138,3 +138,79 @@ ORDER BY year
 </p>
 
 4 — Post-2015 growth signals rising adoption, supporting demand forecasting and market expansion.
+
+
+### **Task 5 — Most to Least Expensive NYC Boroughs** 
+
+**Steps:**
+
+- Calculate average price per borough. Exclude extreme outliers (price <10 or >1000).
+- Rank boroughs based on average price.
+
+
+**Query:**
+
+
+```sql
+SELECT 
+  x.neighbourhood_group,
+  x.avg_price,
+  RANK() OVER(ORDER BY x.avg_price DESC) AS price_rank
+FROM (
+  SELECT 
+  neighbourhood_group,
+  ROUND(AVG(CAST(price AS float64)), 2) AS avg_price
+  FROM `New.AB_NYC_2019`
+  WHERE price BETWEEN 10 AND 1000
+  GROUP BY neighbourhood_group
+) AS x
+
+```
+
+**Result :**
+
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/9536d7bd-1425-4524-a721-21c19f52f0cf" alt="Capture" width="403" height="130"/>
+</p>
+
+5 — Manhattan is ranked highest in average price, followed by Brooklyn, highlighting premium vs. budget boroughs.
+
+
+
+### **Task 6 — Room Types Segmented by Price** 
+
+**Steps:**
+
+- Analyze Airbnb listings by room type. Determine average price and total listings per room type.
+- Divide room types into four price tiers to understand pricing segmentation.
+
+
+  **Query:**
+
+
+```sql
+SELECT 
+  y.room_type,
+  y.avg_price,
+  y.total_listings,
+  NTILE(4) OVER (ORDER BY y.avg_price) AS price_quartile
+FROM(
+  SELECT 
+    room_type,
+    ROUND(AVG(CAST(price AS float64)), 2) AS avg_price,
+    COUNT(id) AS total_listings
+    FROM `New.AB_NYC_2019`
+    WHERE price BETWEEN 10 AND 100
+    GROUP BY room_type
+) AS y
+
+```
+
+**Result :**
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/c1a0ee35-7d26-46fd-9f04-1cb61fe7d974" alt="Capture" width="502" height="85"/>
+</p>
+
+6 — Entire homes are the priciest, shared rooms the cheapest, showing clear pricing tiers for different room types.
