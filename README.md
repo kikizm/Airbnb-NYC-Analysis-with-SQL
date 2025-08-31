@@ -104,3 +104,37 @@ ORDER BY est_revenue DESC
 </p>
 
 3 — Revenue skews to a small set of large hosts (Pareto 80/20), highlighting who to focus retention and partnerships on.
+
+
+
+### **Task 4 — Growth trend by year (using review year as activity proxy)** 
+
+**Steps:**
+
+- Use review as a proxy for listing activity.
+- Count total listings per year.
+- Exclude null dates.
+
+
+
+**Query:**
+
+
+```sql
+SELECT
+    EXTRACT(YEAR FROM SAFE_CAST(last_review AS DATE)) AS year,
+    COUNT(id) AS total_listings
+FROM `New.AB_NYC_2019`
+WHERE last_review IS NOT NULL
+GROUP BY year
+ORDER BY year
+
+```
+
+**Result :**
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a3ee80de-a286-4787-b7bb-22590712194d" alt="Capture" width="244" height="216"/>
+</p>
+
+4 — Post-2015 growth signals rising adoption, supporting demand forecasting and market expansion.
