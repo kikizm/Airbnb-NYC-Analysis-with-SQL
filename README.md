@@ -41,7 +41,7 @@ ORDER BY total_listings DESC
 1 — Most listings are concentrated in Manhattan and Brooklyn, making it the dominant area for Airbnb properties. 
 
 
-### **Task 2 — Price Comparison Across Boroughs**
+### **2. Price Comparison Across Boroughs**
 
 **Steps:**
 
@@ -72,7 +72,7 @@ ORDER BY avg_price DESC
 2 — Manhattan is most expensive, Bronx, Queens, and Staten Island are cheaper, guiding customer targeting.
 
 
-### **Task 3 — Top Hosts by Estimated Revenue**
+### **3. Top Hosts by Estimated Revenue**
 
 **Steps:**
 
@@ -107,7 +107,7 @@ ORDER BY est_revenue DESC
 
 
 
-### **Task 4 — Growth trend by year (using review year as activity proxy)** 
+### **4. Growth trend by year (using review year as activity proxy)** 
 
 **Steps:**
 
@@ -140,7 +140,7 @@ ORDER BY year
 4 — Post-2015 growth signals rising adoption, supporting demand forecasting and market expansion.
 
 
-### **Task 5 — Most to Least Expensive NYC Boroughs** 
+### **5. Most to Least Expensive NYC Boroughs** 
 
 **Steps:**
 
@@ -178,7 +178,7 @@ FROM (
 
 
 
-### **Task 6 — Room Types Segmented by Price** 
+### **6. Room Types Segmented by Price** 
 
 **Steps:**
 
@@ -214,3 +214,113 @@ FROM(
 </p>
 
 6 — Entire homes are the priciest, shared rooms the cheapest, showing clear pricing tiers for different room types.
+
+
+### **7. Borough & Room Type Availability Patterns**
+
+**Steps:**
+
+- Examine how many days listings are available per year, by borough and room type.
+- Calculate average availability to understand listing activity and potential booking opportunities.
+
+
+ **Query:**
+
+
+```sql
+SELECT 
+  neighbourhood_group,
+  room_type,
+  ROUND(AVG(CAST(availability_365 AS float64)), 1) AS avg_available
+FROM `New.AB_NYC_2019`
+GROUP BY neighbourhood_group, room_type
+ORDER BY neighbourhood_group, room_type
+
+```
+
+**Result :**
+
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/343fd5ca-001c-4323-b62d-c6806631a7ce" alt="Capture" width="502" height="85"/>
+</p>
+
+
+7 — Availability varies across boroughs and room types, helping identify where supply is high or limited for better booking strategies.
+
+
+### **8. NYC Airbnb Pricing Quartiles Across Boroughs**
+
+**Steps:**
+
+- Analyze price distribution per borough. Calculate 25th percentile, median, and 75th percentile to understand price spread.
+- Focus on standard range by excluding extreme outliers (price <10 or >1000).
+
+
+**Query:**
+
+
+```sql
+SELECT
+    neighbourhood_group,
+    PERCENTILE_CONT(CAST(price AS FLOAT64), 0.25) OVER (PARTITION BY neighbourhood_group) AS p25_price,
+    PERCENTILE_CONT(CAST(price AS FLOAT64), 0.50) OVER (PARTITION BY neighbourhood_group) AS median_price,
+    PERCENTILE_CONT(CAST(price AS FLOAT64), 0.75) OVER (PARTITION BY neighbourhood_group) AS p75_price
+FROM `New.AB_NYC_2019`
+WHERE price BETWEEN 10 AND 1000
+GROUP BY neighbourhood_group, price
+LIMIT 10
+
+```
+
+**Result :**
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/74b59782-b0b2-469d-9f23-918878d94824" alt="Capture" width="502" height="234"/>
+</p>
+
+
+8 — Price distribution varies by borough, highlighting where mid-range or premium listings dominate and helping guide pricing strategies.
+
+
+### **9. Airbnb Host Tier Analysis**
+
+**Steps:**
+
+- Segment hosts based on the number of listings they manage.
+- Count how many hosts are in each tier and how many listings they have.
+- Identify concentration of listings among large vs. small hosts.
+
+
+**Query:**
+
+
+```sql
+SELECT
+    CASE 
+        WHEN calculated_host_listings_count >= 10 THEN '10+ listings'
+        WHEN calculated_host_listings_count >= 3  THEN '3-9 listings'
+        WHEN calculated_host_listings_count = 2   THEN '2 listings'
+        ELSE 'Single listing'
+    END AS host_tier,
+    COUNT(DISTINCT host_id) AS hosts,
+    COUNT(*) AS listings
+FROM `New.AB_NYC_2019`
+GROUP BY CASE 
+        WHEN calculated_host_listings_count >= 10 THEN '10+ listings'
+        WHEN calculated_host_listings_count >= 3  THEN '3-9 listings'
+        WHEN calculated_host_listings_count = 2   THEN '2 listings'
+        ELSE 'Single listing'
+    END
+ORDER BY listings DESC
+
+```
+
+**Result :**
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/b4e87238-c812-4e6f-bf28-99189b0bc980" alt="Capture" width="405" height="109"/>
+</p>
+
+
+9 — Most listings are managed by hosts with multiple properties, showing that a small number of large hosts dominate the market, highlighting targets for retention and partnerships.
